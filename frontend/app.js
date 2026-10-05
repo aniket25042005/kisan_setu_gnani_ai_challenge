@@ -39,16 +39,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Ambient Waveform Canvas
   function drawIdleWaveform() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(52, 211, 153, 0.3)';
+    ctx.lineWidth = currentNoiseMode === 'tractor' ? 3 : 2;
+    
+    // Color & amplitude based on active noise mode
+    let strokeColor = 'rgba(52, 211, 153, 0.4)';
+    let baseAmp = 6;
+    const time = Date.now() * 0.004;
+
+    if (currentNoiseMode === 'tractor') {
+      strokeColor = 'rgba(245, 158, 11, 0.85)'; // Vibrant Amber for Tractor
+      baseAmp = 18 + Math.sin(time * 6) * 10;   // Pulsating diesel engine rumble waves
+    } else if (currentNoiseMode === 'mandi') {
+      strokeColor = 'rgba(56, 189, 248, 0.75)'; // Cyan for Mandi chatter
+      baseAmp = 12 + (Math.random() * 8);
+    } else if (currentNoiseMode === 'telephony') {
+      strokeColor = 'rgba(168, 85, 247, 0.75)'; // Purple for Telephony
+      baseAmp = 8;
+    }
+
+    ctx.strokeStyle = strokeColor;
     ctx.beginPath();
 
-    const sliceWidth = canvas.width / 50;
+    const sliceWidth = canvas.width / 60;
     let x = 0;
-    const time = Date.now() * 0.003;
 
-    for (let i = 0; i < 50; i++) {
-      const y = (canvas.height / 2) + Math.sin(i * 0.2 + time) * 6;
+    for (let i = 0; i < 60; i++) {
+      let yOffset = Math.sin(i * 0.25 + time) * baseAmp;
+      if (currentNoiseMode === 'tractor') {
+        // Add mechanical cylinder pulse ripples
+        yOffset += Math.sin(i * 0.8 + time * 3) * 4;
+      }
+      const y = (canvas.height / 2) + yOffset;
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
       x += sliceWidth;
@@ -63,27 +84,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Acoustic Noise Selector (The 60s Demo Hook)
   noisePills.forEach(pill => {
-    pill.addEventListener('click', () => {
+    pill.addEventListener('click', async () => {
       noisePills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       currentNoiseMode = pill.getAttribute('data-mode');
       
       const labels = {
         clean: '🌿 Clean Studio Audio active',
-        tractor: '🚜 Simulated Tractor Engine & Field Noise Active!',
-        mandi: '🏪 Simulated Rural Mandi Market Noise Active!',
-        telephony: '📞 8kHz Narrowband Telephony Simulation Active!'
+        tractor: '🚜 Tractor Engine Active: Audio streaming through speakers & mixed into voice!',
+        mandi: '🏪 Mandi Crowd Active: Market chatter streaming & mixed into voice!',
+        telephony: '📞 8kHz Telephony Filter Active: Simulating 2G narrowband phone call!'
       };
       visualizerStatus.textContent = labels[currentNoiseMode] || 'Ready';
-      playAmbientNoiseEffect(currentNoiseMode);
+      await playAmbientNoiseEffect(currentNoiseMode);
     });
   });
 
   // Synthesize background noise soundscapes using Web Audio API
-  function playAmbientNoiseEffect(mode) {
+  async function playAmbientNoiseEffect(mode) {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
+    if (audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+      } catch (e) {
+        console.warn('AudioContext resume error:', e);
+      }
+    }
+
     if (noiseNode) {
       try { noiseNode.stop(); noiseNode.disconnect(); } catch (e) {}
       noiseNode = null;
@@ -98,16 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (let i = 0; i < bufferSize; i++) {
       if (mode === 'tractor') {
-        // Deep diesel engine rumble (sawtooth-like modulation)
+        // Deep diesel engine rumble (heavy cylinder chug + exhaust noise)
         const t = i / audioContext.sampleRate;
-        const rumble = Math.sin(2 * Math.PI * 28 * t) * 0.6 + Math.sin(2 * Math.PI * 56 * t) * 0.3;
-        output[i] = (rumble + (Math.random() * 2 - 1) * 0.15) * 0.25;
+        const stroke1 = Math.sin(2 * Math.PI * 18 * t); // Low 18Hz idle throb
+        const stroke2 = Math.sin(2 * Math.PI * 36 * t) * 0.5; // 2nd harmonic
+        const stroke3 = Math.sin(2 * Math.PI * 72 * t) * 0.25; // 3rd harmonic
+        const combustionClatter = (Math.random() * 2 - 1) * 0.22 * (stroke1 > 0 ? 1.6 : 0.4);
+        output[i] = (stroke1 * 0.5 + stroke2 + stroke3 + combustionClatter) * 0.35;
       } else if (mode === 'mandi') {
         // High frequency crowd chatter + murmurs
-        output[i] = (Math.random() * 2 - 1) * 0.18;
+        output[i] = (Math.random() * 2 - 1) * 0.22;
       } else {
         // Telephonic hiss
-        output[i] = (Math.random() * 2 - 1) * 0.08;
+        output[i] = (Math.random() * 2 - 1) * 0.10;
       }
     }
 
@@ -116,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     whiteNoise.loop = true;
 
     const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.15; // Pleasant background volume
+    gainNode.gain.value = 0.28; // Clearly audible diesel engine rumble
 
     whiteNoise.connect(gainNode);
     gainNode.connect(audioContext.destination);
@@ -170,7 +202,24 @@ document.addEventListener('DOMContentLoaded', () => {
       scriptProcessor.onaudioprocess = e => {
         if (!isRecording) return;
         const channelData = e.inputBuffer.getChannelData(0);
-        pcmBuffers.push(new Float32Array(channelData));
+        const bufferCopy = new Float32Array(channelData.length);
+        
+        for (let i = 0; i < channelData.length; i++) {
+          let noiseSample = 0;
+          if (currentNoiseMode === 'tractor') {
+            const t = (recordingLength + i) / audioContext.sampleRate;
+            const stroke1 = Math.sin(2 * Math.PI * 18 * t) * 0.4;
+            const stroke2 = Math.sin(2 * Math.PI * 36 * t) * 0.2;
+            const clatter = (Math.random() * 2 - 1) * 0.12;
+            noiseSample = stroke1 + stroke2 + clatter;
+          } else if (currentNoiseMode === 'mandi') {
+            noiseSample = (Math.random() * 2 - 1) * 0.14;
+          }
+          // Mix voice + background noise with clipping guard
+          bufferCopy[i] = Math.max(-1, Math.min(1, channelData[i] + noiseSample));
+        }
+
+        pcmBuffers.push(bufferCopy);
         recordingLength += channelData.length;
       };
 
@@ -179,7 +228,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       isRecording = true;
       micButton.classList.add('recording');
-      visualizerStatus.textContent = 'Listening to farmer voice... (माइक सुन रहा है)';
+      
+      const recordingStatusText = {
+        clean: '🎙️ Listening to farmer voice... (माइक सुन रहा है)',
+        tractor: '🚜 Recording with Live Tractor Noise Injection... (माइक सुन रहा है)',
+        mandi: '🏪 Recording with Rural Mandi Chatter Injection... (माइक सुन रहा है)',
+        telephony: '📞 Recording with 8kHz Telephony Filter... (माइक सुन रहा है)'
+      };
+      visualizerStatus.textContent = recordingStatusText[currentNoiseMode] || 'Listening...';
 
       // Timer
       recordingSeconds = 0;

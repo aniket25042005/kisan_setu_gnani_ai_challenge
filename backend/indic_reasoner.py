@@ -94,6 +94,22 @@ class IndicReasoner:
                         f"రైతు మిత్రమా, ఇది {crop_name} తెగులు లక్షణం. "
                         f"సేంద్రీయ నివారణ: {organic[:85]}."
                     )
+                elif "kn" in lang:
+                    voice_text = (
+                        f"ರೈತ ಮಿತ್ರರೇ, ಇದು {crop_name} ಬೆಳೆಯಲ್ಲಿ ರೋಗದ ಲಕ್ಷಣವಾಗಿದೆ. "
+                        f"ಸಾವಯವ ಪರಿಹಾರ: {organic[:85]}."
+                    )
+                elif "ta" in lang:
+                    voice_text = (
+                        f"விவசாய நண்பரே, இது {crop_name} பயிரின் நோய் அறிகுறி. "
+                        f"இயற்கை நிவாரணம்: {organic[:85]}."
+                    )
+                elif "en" in lang:
+                    voice_text = (
+                        f"Dear farmer, these symptoms indicate {crop_name} disease. "
+                        f"Organic remedy: {organic[:85]} "
+                        f"For severe infestation, spray {chemical[:80]}."
+                    )
                 else:
                     voice_text = (
                         f"किसान भाई, यह {crop_name} में रोग के लक्षण हैं। "
@@ -119,7 +135,7 @@ class IndicReasoner:
         # MANDI GUARD: Must contain price/market words!
         price_keywords = [
             "bhav", "भाव", "दर", "रेट", "rate", "price", "mandi", "मंडी", 
-            "बाजार", "मार्केट", "मार्केटमध्ये", "बिक्री", "क्विंटल", "ధర", "దర", "ಬೆಲೆ"
+            "बाजार", "मार्केट", "मार्केटमध्ये", "बिक्री", "क्विंटल", "ధర", "దర", "ಬೆಲೆ", "விலை"
         ]
         has_price_intent = any(k in text for k in price_keywords)
 
@@ -153,6 +169,22 @@ class IndicReasoner:
                     f"రైతు మిత్రమా, {primary_mkt.get('mandi')} మార్కెట్‌లో {comm_title} సగటు ధర "
                     f"క్వింటాల్‌కు {primary_mkt.get('modal_price')} రూపాయలు పలుకుతోంది."
                 )
+            elif "kn" in lang:
+                voice_text = (
+                    f"ರೈತ ಮಿತ್ರರೇ, {primary_mkt.get('mandi')} ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ {comm_title} ಸರಾಸರಿ ಬೆಲೆ "
+                    f"ಕ್ವಿಂಟಾಲ್‌ಗೆ {primary_mkt.get('modal_price')} ರೂಪಾಯಿ ಇದೆ."
+                )
+            elif "ta" in lang:
+                voice_text = (
+                    f"விவசாய நண்பரே, {primary_mkt.get('mandi')} சந்தையில் {comm_title} சராசரி விலை "
+                    f"குவிண்டாலுக்கு {primary_mkt.get('modal_price')} ரூபாய் ஆக உள்ளது."
+                )
+            elif "en" in lang:
+                voice_text = (
+                    f"Farmer friend, in {primary_mkt.get('mandi')} market the modal price of {comm_title} "
+                    f"is {primary_mkt.get('modal_price')} rupees per quintal, with maximum price of "
+                    f"{primary_mkt.get('max_price')} rupees."
+                )
             else:
                 voice_text = (
                     f"राम राम किसान भाई! {primary_mkt.get('mandi')} मंडी में {comm_title} का मॉडल भाव "
@@ -175,10 +207,36 @@ class IndicReasoner:
                 }
             }
         elif has_price_intent:
-            voice_text = (
-                "किसान भाई, नासिक मंडी में प्याज 2400 रुपये और खन्ना मंडी में गेहूं 2350 रुपये प्रति क्विंटल चल रहा है। "
-                "आप किसी खास फसल का भाव पूछना चाहते हैं?"
-            )
+            if "mr" in lang:
+                voice_text = (
+                    "शेतकरी बंधू, नाशिक बाजारात कांदा २४०० रुपये आणि खन्ना बाजारात गहू २३५० रुपये प्रति क्विंटल चालू आहे. "
+                    "आपल्याला कोणत्या विशिष्ट पिकाचा भाव जाणून घ्यायचा आहे?"
+                )
+            elif "te" in lang:
+                voice_text = (
+                    "రైతు మిత్రమా, నాసిక్ మార్కెట్‌లో ఉల్లిపాయలు 2400 రూపాయలు మరియు ఖన్నా మార్కెట్‌లో గోధుమలు 2350 రూపాయలు పలుకుతున్నాయి. "
+                    "మీరు ఏ నిర్దిష్ట పంట ధర తెలుసుకోవాలనుకుంటున్నారు?"
+                )
+            elif "kn" in lang:
+                voice_text = (
+                    "ರೈತ ಮಿತ್ರರೇ, ನಾಸಿಕ್ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಈರುಳ್ಳಿ 2400 ರೂಪಾಯಿ ಮತ್ತು ಖನ್ನಾ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಗೋಧಿ 2350 ರೂಪಾಯಿ ಇದೆ. "
+                    "ನೀವು ಯಾವ ನಿರ್ದಿಷ್ಟ ಬೆಳೆಯ ಬೆಲೆಯನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತೀರಿ?"
+                )
+            elif "ta" in lang:
+                voice_text = (
+                    "விவசாய நண்பரே, நாசிக் சந்தையில் வெங்காயம் 2400 ரூபாய் மற்றும் கன்னா சந்தையில் கோதுமை 2350 ரூபாய் ஆக உள்ளது. "
+                    "குறிப்பிட்ட எந்த பயிரின் விலையை அறிய விரும்புகிறீர்கள்?"
+                )
+            elif "en" in lang:
+                voice_text = (
+                    "Farmer friend, in Nashik mandi onion is trading at 2400 rupees and in Khanna wheat is 2350 rupees per quintal. "
+                    "Which specific crop price would you like to inquire about?"
+                )
+            else:
+                voice_text = (
+                    "किसान भाई, नासिक मंडी में प्याज 2400 रुपये और खन्ना मंडी में गेहूं 2350 रुपये प्रति क्विंटल चल रहा है। "
+                    "आप किसी खास फसल का भाव पूछना चाहते हैं?"
+                )
             return {
                 "intent": "mandi",
                 "title": "Mandi Overview",
@@ -193,10 +251,24 @@ class IndicReasoner:
         for s in schemes:
             for kw in s.get("keywords", []):
                 if kw.lower() in text or kw in text:
-                    voice_text = (
-                        f"किसान भाई, {s.get('name')} के तहत: {s.get('benefit')[:110]} "
-                        f"अधिक जानकारी या सहायता के लिए हेल्पलाइन {s.get('helpline')} पर संपर्क करें।"
-                    )
+                    if "mr" in lang:
+                        voice_text = f"शेतकरी बंधू, {s.get('name')} अंतर्गत: {s.get('benefit')[:100]} अधिक माहितीसाठी हेल्पलाइन {s.get('helpline')} वर संपर्क करा."
+                    elif "te" in lang:
+                        voice_text = f"రైతు మిత్రమా, {s.get('name')} పథకం ద్వారా: {s.get('benefit')[:100]} సహాయం కోసం హెల్ప్‌లైన్ {s.get('helpline')} కు కాల్ చేయండి."
+                    elif "kn" in lang:
+                        voice_text = f"ರೈತ ಮಿತ್ರರೇ, {s.get('name')} ಯೋಜನೆಯಡಿ: {s.get('benefit')[:100]} ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಸಹಾಯವಾಣಿ {s.get('helpline')} ಗೆ ಸಂಪರ್ಕಿಸಿ."
+                    elif "ta" in lang:
+                        voice_text = f"விவசாய நண்பரே, {s.get('name')} திட்டத்தின் கீழ்: {s.get('benefit')[:100]} கூடுதல் தகவலுக்கு உதவி எண் {s.get('helpline')} ஐ தொடர்பு கொள்ளவும்."
+                    elif "en" in lang:
+                        voice_text = (
+                            f"Dear farmer, under {s.get('name')}: {s.get('benefit')[:110]} "
+                            f"For more details or assistance, contact helpline {s.get('helpline')}."
+                        )
+                    else:
+                        voice_text = (
+                            f"किसान भाई, {s.get('name')} के तहत: {s.get('benefit')[:110]} "
+                            f"अधिक जानकारी या सहायता के लिए हेल्पलाइन {s.get('helpline')} पर संपर्क करें।"
+                        )
                     return {
                         "intent": "scheme",
                         "title": s.get("name"),
@@ -211,12 +283,26 @@ class IndicReasoner:
                     }
 
         # Check broad/generic scheme inquiry
-        generic_scheme_words = ["योजना", "योजनाएं", "scheme", "yojana", "yojna", "सरकारी", "subsidy", "सब्सिडी"]
+        generic_scheme_words = ["योजना", "योजनाएं", "scheme", "schemes", "yojana", "yojna", "सरकारी", "subsidy", "सब्सिडी", "పథకాలు", "ಯೋಜನೆ", "திட்டம்"]
         if any(gw in text for gw in generic_scheme_words):
-            voice_text = (
-                "किसान भाई, प्रमुख सरकारी योजनाओं में: पीएम किसान सम्मान निधि से प्रति वर्ष 6000 रुपये सहायता, "
-                "फसल बीमा योजना से नुकसान पर क्षतिपूर्ति, और किसान क्रेडिट कार्ड से मात्र 4 प्रतिशत ब्याज पर ऋण मिलता है।"
-            )
+            if "mr" in lang:
+                voice_text = "शेतकरी बंधू, मुख्य सरकारी योजनांमध्ये: पीएम किसान सन्मान निधी, पीक विमा योजना, आणि किसान क्रेडिट कार्ड द्वारे कमी व्याजावर कर्ज मिळते."
+            elif "te" in lang:
+                voice_text = "రైతు మిత్రమా, ప్రధాన ప్రభుత్వ పథకాలలో: పీఎం కిసాన్ సమ్మాన్ నిధి, పంట బీమా పథకం, మరియు కేసీసీ ద్వారా తక్కువ వడ్డీకే రుణాలు లభిస్తాయి."
+            elif "kn" in lang:
+                voice_text = "ರೈತ ಮಿತ್ರರೇ, ಮುಖ್ಯ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳಲ್ಲಿ: ಪಿಎಂ ಕಿಸಾನ್ ಸಮ್ಮಾನ್ ನಿಧಿ, ಬೆಳೆ ವಿಮೆ ಮತ್ತು ಕಿಸಾನ್ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮೂಲಕ ಕಡಿಮೆ ಬಡ್ಡಿದರದಲ್ಲಿ ಸಾಲ ದೊರೆಯುತ್ತದೆ."
+            elif "ta" in lang:
+                voice_text = "விவசாய நண்பரே, முக்கிய அரசு திட்டங்களில்: பிஎம் கிசான் திட்டம் மூலம் நிதி உதவி, பயிர் காப்பீட்டு திட்டம் மற்றும் குறைந்த வட்டியில் கிசான் கிரெடிட் கார்டு கடன் கிடைக்கும்."
+            elif "en" in lang:
+                voice_text = (
+                    "Dear farmer, major government schemes include: PM-Kisan Samman Nidhi with 6,000 rupees annual DBT support, "
+                    "Pradhan Mantri Fasal Bima Yojana for crop loss compensation, and Kisan Credit Card offering loans at just 4% interest."
+                )
+            else:
+                voice_text = (
+                    "किसान भाई, प्रमुख सरकारी योजनाओं में: पीएम किसान सम्मान निधि से प्रति वर्ष 6000 रुपये सहायता, "
+                    "फसल बीमा योजना से नुकसान पर क्षतिपूर्ति, और किसान क्रेडिट कार्ड से मात्र 4 प्रतिशत ब्याज पर ऋण मिलता है।"
+                )
             return {
                 "intent": "scheme",
                 "title": "Major Government Schemes (मुख्य सरकारी योजनाएं)",
@@ -233,23 +319,48 @@ class IndicReasoner:
         return None
 
     def _general_agri_response(self, text: str, lang: str) -> Dict[str, Any]:
-        voice_text = (
-            "राम राम किसान भाई! मैं किसान सेतु हूँ। आप मुझसे मंडी भाव, फसल में लगने वाले कीड़े या बीमारी, "
-            "या सरकारी योजनाओं के बारे में अपनी भाषा में पूछ सकते हैं।"
-        )
+        if "mr" in lang:
+            voice_text = "नमस्कार शेतकरी बंधू! मी किसान सेतु आहे. आपण मला बाजारभाव, पिकावरील रोग किंवा सरकारी योजनांबद्दल विचारू शकता."
+        elif "te" in lang:
+            voice_text = "నమస్కారం రైతు మిత్రమా! నేను కిసాన్ సేతు. మీరు నన్ను మార్కెట్ ధరలు, పంట తెగుళ్లు లేదా ప్రభుత్వ పథకాల గురించి అడగవచ్చు."
+        elif "kn" in lang:
+            voice_text = "ನಮಸ್ಕಾರ ರೈತ ಮಿತ್ರರೇ! ನಾನು ಕಿಸಾನ್ ಸೇತು. ನೀವು ಮಾರುಕಟ್ಟೆ ಬೆಲೆ, ಬೆಳೆ ರೋಗ ಅಥವಾ ಸರ್ಕಾರದ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ಕೇಳಬಹುದು."
+        elif "ta" in lang:
+            voice_text = "வணக்கம் விவசாய நண்பரே! நான் கிசான் சேது. நீங்கள் என்னிடம் சந்தை விலை, பயிர் நோய்கள் அல்லது அரசு திட்டங்கள் பற்றி கேட்கலாம்."
+        elif "en" in lang:
+            voice_text = (
+                "Namaste farmer friend! I am KisanSetu. You can ask me about live APMC mandi rates, "
+                "crop pest remedies and disease diagnosis, or government farmer schemes in your language."
+            )
+        else:
+            voice_text = (
+                "राम राम किसान भाई! मैं किसान सेतु हूँ। आप मुझसे मंडी भाव, फसल में लगने वाले कीड़े या बीमारी, "
+                "या सरकारी योजनाओं के बारे में अपनी भाषा में पूछ सकते हैं।"
+            )
+
+        sample_questions = [
+            "नासिक मंडी में प्याज का क्या भाव है?",
+            "टमाटर के पत्ते पीले पड़ रहे हैं क्या करें?",
+            "पीएम किसान सम्मान निधि की किस्त कब आएगी?",
+            "कपास में गुलाबी सुंडी का इलाज बताएं"
+        ]
+        if "en" in lang:
+            sample_questions = [
+                "What is the onion rate in Nashik mandi today?",
+                "Tomato leaves are turning yellow, what remedy should I use?",
+                "When will the next PM-Kisan installment be credited?",
+                "How to treat pink bollworm in cotton?"
+            ]
+
         return {
             "intent": "general",
             "title": "KisanSetu Advisory",
             "voice_response": voice_text,
             "data": {
-                "sample_questions": [
-                    "नासिक मंडी में प्याज का क्या भाव है?",
-                    "टमाटर के पत्ते पीले पड़ रहे हैं क्या करें?",
-                    "पीएम किसान सम्मान निधि की किस्त कब आएगी?",
-                    "कपास में गुलाबी सुंडी का इलाज बताएं"
-                ]
+                "sample_questions": sample_questions
             }
         }
 
     def _fallback_greeting(self, lang: str) -> Dict[str, Any]:
         return self._general_agri_response("", lang)
+
