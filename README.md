@@ -60,9 +60,8 @@ Open your browser and navigate to: **`http://127.0.0.1:8000`**
 
 ## 📁 Repository Structure
 ```
-├── IMPLEMENTATION_PLAN.md    # Master strategy and architectural roadmap
 ├── README.md                 # Project documentation
-├── .env                      # API credentials (gitignored)
+├── .env.example              # Template for API credentials
 ├── backend/
 │   ├── app.py                # FastAPI backend & static server
 │   ├── gnani_client.py       # Gnani Prisma v2.5 STT & Timbre v2.5 TTS wrapper
@@ -70,19 +69,15 @@ Open your browser and navigate to: **`http://127.0.0.1:8000`**
 │   ├── audio_processor.py    # 8kHz telephony filter & noise utilities
 │   ├── test_pipeline.py      # Automated pipeline verification tests
 │   └── data/                 # Datasets for Mandi rates, crop diseases, & schemes
-├── frontend/
-│   ├── index.html            # Modern glassmorphic interface
-│   ├── style.css             # Emerald & earth theme design system
-│   ├── app.js                # Web Audio API visualizer & API controller
-│   └── assets/               # Soundscapes & icons
-└── submission/
-    ├── video_script.md       # 60-second video demo script
-    ├── post_template.md      # LinkedIn and X post drafts
-    └── project_brief.md      # Written contest submission brief
+└── frontend/
+    ├── index.html            # Modern glassmorphic interface
+    ├── style.css             # Emerald & earth theme design system
+    ├── app.js                # Web Audio API visualizer & API controller
+    └── assets/               # Soundscapes & icons
 ```
 
 ---
 
-## 🏆 Contest Alignment
-* **Challenge**: [The Great Indian AI Internship Challenge](https://www.gnani.ai/great-indian-ai-internship-registration-form#terms)
-* **Categories Contested**: Regional Languages, Noisy Telephonic Audio, Real-World Impact, Best Solo Project, Best 60-Second Demo.
+## 🏆 Project Context
+* **Built for**: [The Great Indian AI Internship Challenge](https://www.gnani.ai/great-indian-ai-internship-registration-form#terms) by **Gnani.ai**.
+* **Categories**: Regional Languages, Noisy Telephonic Audio, Real-World Impact, Best Solo Project.

@@ -31,3 +31,7 @@ backend/cache/
 .DS_Store
 Thumbs.db
 *.log
+
+# Internal Planning & Submission Drafts (Keep local only)
+submission/
+IMPLEMENTATION_PLAN.md
