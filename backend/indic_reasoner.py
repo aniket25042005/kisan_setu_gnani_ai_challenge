@@ -209,6 +209,27 @@ class IndicReasoner:
                             "helpline": s.get("helpline")
                         }
                     }
+
+        # Check broad/generic scheme inquiry
+        generic_scheme_words = ["योजना", "योजनाएं", "scheme", "yojana", "yojna", "सरकारी", "subsidy", "सब्सिडी"]
+        if any(gw in text for gw in generic_scheme_words):
+            voice_text = (
+                "किसान भाई, प्रमुख सरकारी योजनाओं में: पीएम किसान सम्मान निधि से प्रति वर्ष 6000 रुपये सहायता, "
+                "फसल बीमा योजना से नुकसान पर क्षतिपूर्ति, और किसान क्रेडिट कार्ड से मात्र 4 प्रतिशत ब्याज पर ऋण मिलता है।"
+            )
+            return {
+                "intent": "scheme",
+                "title": "Major Government Schemes (मुख्य सरकारी योजनाएं)",
+                "voice_response": voice_text,
+                "data": {
+                    "name": "PM Kisan, PM Fasal Bima & KCC",
+                    "benefit": "1. PM Kisan: ₹6000 वार्षिक सहायता DBT द्वारा | 2. Fasal Bima: प्राकृतिक आपदा पर क्षतिपूर्ति | 3. KCC: मात्र 4% ब्याज पर ₹3 लाख तक ऋण।",
+                    "eligibility": "सभी भूमिधारक एवं काश्तकार किसान परिवार।",
+                    "how_to_avail": "निकटतम CSC सेंटर, बैंक शाखा या pmkisan.gov.in / pmfby.gov.in पोर्टल पर आवेदन करें।",
+                    "helpline": "155261 / 1800-180-1551 (Kisan Call Centre)"
+                }
+            }
+
         return None
 
     def _general_agri_response(self, text: str, lang: str) -> Dict[str, Any]:
