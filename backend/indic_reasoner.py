@@ -131,117 +131,189 @@ class IndicReasoner:
                 }
         return None
 
+    @staticmethod
+    def _normalize_indic(s: str) -> str:
+        """Normalize Indic text variants (Chandrabindu, Anusvara, Nukta)."""
+        if not s:
+            return ""
+        # Replace Chandrabindu (ँ U+0901) with Anusvara (ं U+0902)
+        s = s.replace('\u0901', '\u0902')
+        # Remove Nukta (़ U+093C) so ज़ -> ज, फ़ -> फ
+        s = s.replace('\u093c', '')
+        return s.lower().strip()
+
+    def _find_market(self, markets: list, text: str, norm_text: str) -> dict:
+        """Find user-specified market by city or state name, or default to primary market."""
+        if not markets:
+            return {}
+        city_keywords = {
+            "nashik": ["nashik", "lasalgaon", "नासिक", "नाशिक", "लासलगाव"],
+            "indore": ["indore", "इंदौर", "इंदूर"],
+            "khanna": ["khanna", "खन्ना"],
+            "karnal": ["karnal", "करनाल"],
+            "azadpur": ["azadpur", "आजादपुर", "दिल्ली", "delhi"],
+            "kolar": ["kolar", "कोलार"],
+            "madanapalle": ["madanapalle", "मदनापल्ले"],
+            "rajkot": ["rajkot", "राजकोट"],
+            "warangal": ["warangal", "वारंगल"],
+            "amravati": ["amravati", "अमरावती"],
+            "latur": ["latur", "लातूर"]
+        }
+        for mkt in markets:
+            mkt_name_lower = mkt.get("mandi", "").lower()
+            for city_key, aliases in city_keywords.items():
+                if any(alias in text or alias in norm_text for alias in aliases):
+                    if city_key in mkt_name_lower or any(a in mkt_name_lower for a in aliases):
+                        return mkt
+        return markets[0]
+
     def _check_mandi(self, text: str, lang: str) -> Optional[Dict[str, Any]]:
         # MANDI GUARD: Must contain price/market words!
         price_keywords = [
             "bhav", "भाव", "दर", "रेट", "rate", "price", "mandi", "मंडी", 
-            "बाजार", "मार्केट", "मार्केटमध्ये", "बिक्री", "क्विंटल", "ధర", "దర", "ಬೆಲೆ", "விலை"
+            "बाजार", "मार्केट", "मार्केटमध्ये", "बिक्री", "क्विंटल", "ధర", "దర", "ಬೆಲೆ", "விலை",
+            "दाम", "dam", "cost", "rupee", "rupees", "रुपये"
         ]
         has_price_intent = any(k in text for k in price_keywords)
+        norm_text = self._normalize_indic(text)
 
         commodities = self.mandi_data.get("commodities", {})
-        matched_comm = None
-        matched_key = None
+        matched_items = []
 
         for key, info in commodities.items():
             for alias in info.get("names", []):
-                if alias.lower() in text:
-                    matched_comm = info
-                    matched_key = key
+                if alias.lower() in text or self._normalize_indic(alias) in norm_text:
+                    matched_items.append((key, info))
                     break
-            if matched_comm:
-                break
 
         # ONLY return Mandi data if user actually asked about price or market!
-        if matched_comm and has_price_intent:
-            markets = matched_comm.get("markets", [])
-            primary_mkt = markets[0] if markets else {}
-            comm_title = matched_key.capitalize()
+        if matched_items and has_price_intent:
+            if len(matched_items) == 1:
+                # Exactly one commodity requested (e.g. ONLY wheat, or ONLY onion)
+                key, info = matched_items[0]
+                comm_title = key.capitalize()
+                primary_mkt = self._find_market(info.get("markets", []), text, norm_text)
 
-            if "mr" in lang:
-                voice_text = (
-                    f"शेतकरी बंधू, {primary_mkt.get('mandi')} मार्केटमध्ये {comm_title} चा सरासरी भाव "
-                    f"{primary_mkt.get('modal_price')} रुपये प्रति क्विंटल चालू आहे. "
-                    f"कमाल भाव {primary_mkt.get('max_price')} रुपयांपर्यंत पोहोचला आहे."
-                )
-            elif "te" in lang:
-                voice_text = (
-                    f"రైతు మిత్రమా, {primary_mkt.get('mandi')} మార్కెట్‌లో {comm_title} సగటు ధర "
-                    f"క్వింటాల్‌కు {primary_mkt.get('modal_price')} రూపాయలు పలుకుతోంది."
-                )
-            elif "kn" in lang:
-                voice_text = (
-                    f"ರೈತ ಮಿತ್ರರೇ, {primary_mkt.get('mandi')} ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ {comm_title} ಸರಾಸರಿ ಬೆಲೆ "
-                    f"ಕ್ವಿಂಟಾಲ್‌ಗೆ {primary_mkt.get('modal_price')} ರೂಪಾಯಿ ಇದೆ."
-                )
-            elif "ta" in lang:
-                voice_text = (
-                    f"விவசாய நண்பரே, {primary_mkt.get('mandi')} சந்தையில் {comm_title} சராசரி விலை "
-                    f"குவிண்டாலுக்கு {primary_mkt.get('modal_price')} ரூபாய் ஆக உள்ளது."
-                )
-            elif "en" in lang:
-                voice_text = (
-                    f"Farmer friend, in {primary_mkt.get('mandi')} market the modal price of {comm_title} "
-                    f"is {primary_mkt.get('modal_price')} rupees per quintal, with maximum price of "
-                    f"{primary_mkt.get('max_price')} rupees."
-                )
-            else:
-                voice_text = (
-                    f"राम राम किसान भाई! {primary_mkt.get('mandi')} मंडी में {comm_title} का मॉडल भाव "
-                    f"{primary_mkt.get('modal_price')} रुपये प्रति क्विंटल है, और अधिकतम भाव "
-                    f"{primary_mkt.get('max_price')} रुपये तक पहुंचा है।"
-                )
+                if "mr" in lang:
+                    voice_text = (
+                        f"शेतकरी बंधू, {primary_mkt.get('mandi')} मार्केटमध्ये {comm_title} चा सरासरी भाव "
+                        f"{primary_mkt.get('modal_price')} रुपये प्रति क्विंटल चालू आहे. "
+                        f"कमाल भाव {primary_mkt.get('max_price')} रुपयांपर्यंत पोहोचला आहे."
+                    )
+                elif "te" in lang:
+                    voice_text = (
+                        f"రైతు మిత్రమా, {primary_mkt.get('mandi')} మార్కెట్‌లో {comm_title} సగటు ధర "
+                        f"క్వింటాల్‌కు {primary_mkt.get('modal_price')} రూపాయలు పలుకుతోంది."
+                    )
+                elif "kn" in lang:
+                    voice_text = (
+                        f"ರೈತ ಮಿತ್ರರೇ, {primary_mkt.get('mandi')} ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ {comm_title} ಸರಾಸರಿ ಬೆಲೆ "
+                        f"ಕ್ವಿಂಟಾಲ್‌ಗೆ {primary_mkt.get('modal_price')} ರೂಪಾಯಿ ಇದೆ."
+                    )
+                elif "ta" in lang:
+                    voice_text = (
+                        f"விவசாய நண்பரே, {primary_mkt.get('mandi')} சந்தையில் {comm_title} சராசரி விலை "
+                        f"குவிண்டாலுக்கு {primary_mkt.get('modal_price')} ரூபாய் ஆக உள்ளது."
+                    )
+                elif "en" in lang:
+                    voice_text = (
+                        f"Farmer friend, in {primary_mkt.get('mandi')} market the modal price of {comm_title} "
+                        f"is {primary_mkt.get('modal_price')} rupees per quintal, with maximum price of "
+                        f"{primary_mkt.get('max_price')} rupees."
+                    )
+                else:
+                    # Hindi
+                    voice_text = (
+                        f"राम राम किसान भाई! {primary_mkt.get('mandi')} मंडी में {comm_title} का मॉडल भाव "
+                        f"{primary_mkt.get('modal_price')} रुपये प्रति क्विंटल है, और अधिकतम भाव "
+                        f"{primary_mkt.get('max_price')} रुपये तक पहुंचा है।"
+                    )
 
-            return {
-                "intent": "mandi",
-                "title": f"Mandi Rates: {comm_title}",
-                "voice_response": voice_text,
-                "data": {
-                    "commodity": comm_title,
-                    "market": primary_mkt.get("mandi"),
-                    "modal_price": primary_mkt.get("modal_price"),
-                    "min_price": primary_mkt.get("min_price"),
-                    "max_price": primary_mkt.get("max_price"),
-                    "unit": matched_comm.get("unit"),
-                    "trend": primary_mkt.get("trend")
+                return {
+                    "intent": "mandi",
+                    "title": f"Mandi Rates: {comm_title}",
+                    "voice_response": voice_text,
+                    "data": {
+                        "commodity": comm_title,
+                        "market": primary_mkt.get("mandi"),
+                        "modal_price": primary_mkt.get("modal_price"),
+                        "min_price": primary_mkt.get("min_price"),
+                        "max_price": primary_mkt.get("max_price"),
+                        "unit": info.get("unit"),
+                        "trend": primary_mkt.get("trend")
+                    }
                 }
-            }
+            else:
+                # Multiple commodities requested (e.g. Onion AND Wheat together)
+                details = []
+                for k, info in matched_items:
+                    mkt = self._find_market(info.get("markets", []), text, norm_text)
+                    details.append({
+                        "commodity": k.capitalize(),
+                        "market": mkt.get("mandi"),
+                        "modal_price": mkt.get("modal_price"),
+                        "max_price": mkt.get("max_price")
+                    })
+
+                comm_names_hi = " और ".join([d["commodity"] for d in details])
+                parts_hi = [f"{d['market']} मंडी में {d['commodity']} का भाव {d['modal_price']} रुपये" for d in details]
+                parts_en = [f"in {d['market']} {d['commodity']} is {d['modal_price']} rupees" for d in details]
+                parts_mr = [f"{d['market']} मार्केटमध्ये {d['commodity']} {d['modal_price']} रुपये" for d in details]
+
+                if "mr" in lang:
+                    voice_text = f"शेतकरी बंधू, {', आणि '.join(parts_mr)} प्रति क्विंटल चालू आहे."
+                elif "en" in lang:
+                    voice_text = f"Farmer friend, {', and '.join(parts_en)} per quintal."
+                else:
+                    voice_text = f"राम राम किसान भाई! {', और '.join(parts_hi)} प्रति क्विंटल चल रहा है।"
+
+                primary_mkt = details[0]
+                return {
+                    "intent": "mandi",
+                    "title": f"Mandi Rates: {comm_names_hi}",
+                    "voice_response": voice_text,
+                    "data": {
+                        "commodity": comm_names_hi,
+                        "market": primary_mkt["market"],
+                        "modal_price": primary_mkt["modal_price"],
+                        "min_price": primary_mkt["modal_price"],
+                        "max_price": primary_mkt["max_price"],
+                        "unit": "₹ / क्विंटल",
+                        "trend": "stable",
+                        "multi_items": details
+                    }
+                }
+
         elif has_price_intent:
             if "mr" in lang:
                 voice_text = (
-                    "शेतकरी बंधू, नाशिक बाजारात कांदा २४०० रुपये आणि खन्ना बाजारात गहू २३५० रुपये प्रति क्विंटल चालू आहे. "
-                    "आपल्याला कोणत्या विशिष्ट पिकाचा भाव जाणून घ्यायचा आहे?"
+                    "शेतकरी बंधू, आपण कोणत्या विशिष्ट पिकाचा भाव विचारत आहात? जसे कांदा, गहू, टोमॅटो, किंवा कापूस."
                 )
             elif "te" in lang:
                 voice_text = (
-                    "రైతు మిత్రమా, నాసిక్ మార్కెట్‌లో ఉల్లిపాయలు 2400 రూపాయలు మరియు ఖన్నా మార్కెట్‌లో గోధుమలు 2350 రూపాయలు పలుకుతున్నాయి. "
-                    "మీరు ఏ నిర్దిష్ట పంట ధర తెలుసుకోవాలనుకుంటున్నారు?"
+                    "రైతు మిత్రమా, మీరు ఏ నిర్దిష్ట పంట ధర తెలుసుకోవాలనుకుంటున్నారు? ఉదాహరణకు ఉల్లిపాయ, గోధుమలు, లేదా పత్తి."
                 )
             elif "kn" in lang:
                 voice_text = (
-                    "ರೈತ ಮಿತ್ರರೇ, ನಾಸಿಕ್ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಈರುಳ್ಳಿ 2400 ರೂಪಾಯಿ ಮತ್ತು ಖನ್ನಾ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಗೋಧಿ 2350 ರೂಪಾಯಿ ಇದೆ. "
-                    "ನೀವು ಯಾವ ನಿರ್ದಿಷ್ಟ ಬೆಳೆಯ ಬೆಲೆಯನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತೀರಿ?"
+                    "ರೈತ ಮಿತ್ರರೇ, ನೀವು ಯಾವ ನಿರ್ದಿಷ್ಟ ಬೆಳೆಯ ಬೆಲೆಯನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತೀರಿ? ಉದಾಹರಣೆಗೆ ಈರುಳ್ಳಿ, ಗೋಧಿ, ಅಥವಾ ಹತ್ತಿ."
                 )
             elif "ta" in lang:
                 voice_text = (
-                    "விவசாய நண்பரே, நாசிக் சந்தையில் வெங்காயம் 2400 ரூபாய் மற்றும் கன்னா சந்தையில் கோதுமை 2350 ரூபாய் ஆக உள்ளது. "
-                    "குறிப்பிட்ட எந்த பயிரின் விலையை அறிய விரும்புகிறீர்கள்?"
+                    "விவசாய நண்பரே, எந்த பயிரின் சந்தை விலையை அறிய விரும்புகிறீர்கள்? எ.கா. வெங்காயம், கோதுமை, அல்லது பருத்தி."
                 )
             elif "en" in lang:
                 voice_text = (
-                    "Farmer friend, in Nashik mandi onion is trading at 2400 rupees and in Khanna wheat is 2350 rupees per quintal. "
-                    "Which specific crop price would you like to inquire about?"
+                    "Farmer friend, which specific crop price would you like to check? For example: onion, wheat, tomato, or cotton."
                 )
             else:
                 voice_text = (
-                    "किसान भाई, नासिक मंडी में प्याज 2400 रुपये और खन्ना मंडी में गेहूं 2350 रुपये प्रति क्विंटल चल रहा है। "
-                    "आप किसी खास फसल का भाव पूछना चाहते हैं?"
+                    "किसान भाई, आप किस फसल का मंडी भाव जानना चाहते हैं? जैसे प्याज, गेहूं, टमाटर, कपास या सोयाबीन।"
                 )
             return {
                 "intent": "mandi",
-                "title": "Mandi Overview",
+                "title": "Mandi Rate Inquiry",
                 "voice_response": voice_text,
-                "data": {"overview": "Onion: ₹2400/Q, Wheat: ₹2350/Q, Cotton: ₹7450/Q"}
+                "data": {"overview": "Onion, Wheat, Tomato, Cotton, Soybean available"}
             }
 
         return None

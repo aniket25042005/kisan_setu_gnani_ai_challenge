@@ -2,7 +2,7 @@
   "last_updated": "2026-10-05T06:00:00+05:30",
   "commodities": {
     "onion": {
-      "names": ["प्याज", "कांदा", "ఉల్లిపాయ", "ಈರುಳ್ಳಿ", "onion", "pyaaz", "kanda"],
+      "names": ["प्याज", "प्याज़", "कांदा", "வெங்காயம்", "உள்ளி", "ఉల్లిపాయ", "ఈರುಳ್ಳಿ", "onion", "onions", "pyaaz", "pyaz", "kanda", "vengayam"],
       "unit": "₹ / क्विंटल",
       "markets": [
         {
@@ -35,7 +35,7 @@
       ]
     },
     "wheat": {
-      "names": ["गेहूं", "गहू", "గోధుమలు", "ಗೋಧಿ", "wheat", "gehu", "gehun", "gahu"],
+      "names": ["गेहूं", "गेहूँ", "गेहू", "गहू", "गव्हाचा", "गव्हाचे", "गव्हा", "கோதுமை", "గోధుమలు", "ಗೋಧಿ", "wheat", "gehu", "gehun", "gehoon", "gahu", "godhumai"],
       "unit": "₹ / क्विंटल",
       "markets": [
         {
@@ -68,7 +68,7 @@
       ]
     },
     "tomato": {
-      "names": ["टमाटर", "टोमॅटो", "టమాట", "ಟೊಮೆಟೊ", "tomato", "tamatar", "tamata"],
+      "names": ["टमाटर", "टोमॅटो", "தக்காளி", "టమాట", "ಟೊಮೆಟೊ", "tomato", "tomatoes", "tamatar", "tamata", "thakkali"],
       "unit": "₹ / क्विंटल",
       "markets": [
         {
@@ -101,7 +101,7 @@
       ]
     },
     "cotton": {
-      "names": ["कपास", "कापूस", "పత్తి", "ಹತ್ತಿ", "cotton", "kapas", "kapus"],
+      "names": ["कपास", "कापूस", "பருத்தி", "పత్తి", "ಹತ್ತಿ", "cotton", "kapas", "kapus", "paruthi"],
       "unit": "₹ / क्विंटल",
       "markets": [
         {
@@ -134,7 +134,7 @@
       ]
     },
     "soybean": {
-      "names": ["सोयाबीन", "सोयाबिन", "సోయాబీన్", "ಸೋಯಾಬೀನ್", "soybean", "soyabean"],
+      "names": ["सोयाबीन", "सोयाबिन", "सोया", "சோயாபீன்", "సోయాబీన్", "ಸೋಯಾಬೀನ್", "soybean", "soyabean", "soya"],
       "unit": "₹ / क्विंटल",
       "markets": [
         {
