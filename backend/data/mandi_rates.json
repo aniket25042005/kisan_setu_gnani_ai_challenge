@@ -1,0 +1,161 @@
+{
+  "last_updated": "2026-10-05T06:00:00+05:30",
+  "commodities": {
+    "onion": {
+      "names": ["प्याज", "कांदा", "ఉల్లిపాయ", "ಈರುಳ್ಳಿ", "onion", "pyaaz", "kanda"],
+      "unit": "₹ / क्विंटल",
+      "markets": [
+        {
+          "mandi": "Nashik (Lasalgaon)",
+          "state": "Maharashtra",
+          "min_price": 1850,
+          "modal_price": 2400,
+          "max_price": 2950,
+          "trend": "up",
+          "arrival_tonnes": 320
+        },
+        {
+          "mandi": "Indore",
+          "state": "Madhya Pradesh",
+          "min_price": 1700,
+          "modal_price": 2250,
+          "max_price": 2800,
+          "trend": "stable",
+          "arrival_tonnes": 180
+        },
+        {
+          "mandi": "Azadpur",
+          "state": "Delhi",
+          "min_price": 2100,
+          "modal_price": 2650,
+          "max_price": 3200,
+          "trend": "up",
+          "arrival_tonnes": 450
+        }
+      ]
+    },
+    "wheat": {
+      "names": ["गेहूं", "गहू", "గోధుమలు", "ಗೋಧಿ", "wheat", "gehu", "gehun", "gahu"],
+      "unit": "₹ / क्विंटल",
+      "markets": [
+        {
+          "mandi": "Khanna",
+          "state": "Punjab",
+          "min_price": 2275,
+          "modal_price": 2350,
+          "max_price": 2420,
+          "trend": "stable",
+          "arrival_tonnes": 600
+        },
+        {
+          "mandi": "Karnal",
+          "state": "Haryana",
+          "min_price": 2250,
+          "modal_price": 2340,
+          "max_price": 2410,
+          "trend": "up",
+          "arrival_tonnes": 390
+        },
+        {
+          "mandi": "Indore",
+          "state": "Madhya Pradesh",
+          "min_price": 2300,
+          "modal_price": 2480,
+          "max_price": 2650,
+          "trend": "up",
+          "arrival_tonnes": 510
+        }
+      ]
+    },
+    "tomato": {
+      "names": ["टमाटर", "टोमॅटो", "టమాట", "ಟೊಮೆಟೊ", "tomato", "tamatar", "tamata"],
+      "unit": "₹ / क्विंटल",
+      "markets": [
+        {
+          "mandi": "Kolar",
+          "state": "Karnataka",
+          "min_price": 1400,
+          "modal_price": 1950,
+          "max_price": 2400,
+          "trend": "down",
+          "arrival_tonnes": 290
+        },
+        {
+          "mandi": "Madanapalle",
+          "state": "Andhra Pradesh",
+          "min_price": 1500,
+          "modal_price": 2100,
+          "max_price": 2600,
+          "trend": "stable",
+          "arrival_tonnes": 410
+        },
+        {
+          "mandi": "Nashik",
+          "state": "Maharashtra",
+          "min_price": 1350,
+          "modal_price": 1850,
+          "max_price": 2300,
+          "trend": "down",
+          "arrival_tonnes": 220
+        }
+      ]
+    },
+    "cotton": {
+      "names": ["कपास", "कापूस", "పత్తి", "ಹತ್ತಿ", "cotton", "kapas", "kapus"],
+      "unit": "₹ / क्विंटल",
+      "markets": [
+        {
+          "mandi": "Rajkot",
+          "state": "Gujarat",
+          "min_price": 6800,
+          "modal_price": 7450,
+          "max_price": 7900,
+          "trend": "up",
+          "arrival_tonnes": 850
+        },
+        {
+          "mandi": "Warangal",
+          "state": "Telangana",
+          "min_price": 6700,
+          "modal_price": 7320,
+          "max_price": 7750,
+          "trend": "stable",
+          "arrival_tonnes": 720
+        },
+        {
+          "mandi": "Amravati",
+          "state": "Maharashtra",
+          "min_price": 6650,
+          "modal_price": 7280,
+          "max_price": 7700,
+          "trend": "up",
+          "arrival_tonnes": 630
+        }
+      ]
+    },
+    "soybean": {
+      "names": ["सोयाबीन", "सोयाबिन", "సోయాబీన్", "ಸೋಯಾಬೀನ್", "soybean", "soyabean"],
+      "unit": "₹ / क्विंटल",
+      "markets": [
+        {
+          "mandi": "Indore",
+          "state": "Madhya Pradesh",
+          "min_price": 4200,
+          "modal_price": 4650,
+          "max_price": 4900,
+          "trend": "stable",
+          "arrival_tonnes": 540
+        },
+        {
+          "mandi": "Latur",
+          "state": "Maharashtra",
+          "min_price": 4250,
+          "modal_price": 4720,
+          "max_price": 4980,
+          "trend": "up",
+          "arrival_tonnes": 480
+        }
+      ]
+    }
+  }
+}

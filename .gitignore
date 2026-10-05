@@ -1,0 +1,33 @@
+# Environment & Credentials (NEVER COMMIT)
+.env
+.env.local
+*.key
+*.pem
+
+# Python Virtual Environments & Packages
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# TTS Audio Cache
+backend/cache/
+*.wav
+*.mp3
+*.ogg
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

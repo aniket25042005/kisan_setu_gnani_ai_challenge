@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KisanSetu (किसान सेतु) — Sovereign AI Voice Desk for Bharat</title>
+  <meta name="description" content="KisanSetu is India's sovereign vernacular voice desk for farmers, powered by Gnani Artha (Prisma v2.5 STT & Timbre v2.5 TTS). Real-time APMC Mandi rates, crop disease diagnosis, and government schemes in Hindi, Marathi, Telugu, and Kannada.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="container">
+    <!-- Top Header & Sovereign AI Badge -->
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="brand-logo-badge">
+          <span class="logo-icon">🌾</span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1 class="brand-title">KisanSetu <span class="hindi-title">किसान सेतु</span></h1>
+            <span class="sovereign-tag">Gnani Artha Stack</span>
+          </div>
+          <p class="brand-subtitle">Sovereign Vernacular AI Voice Desk for Bharat’s Farmers</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Language Selector -->
+        <div class="language-dropdown-wrapper">
+          <label for="languageSelect" class="control-label">भाषा / Language</label>
+          <select id="languageSelect" class="custom-select">
+            <option value="hi-IN" selected>🇮🇳 हिन्दी (Hindi)</option>
+            <option value="mr-IN">🇮🇳 मराठी (Marathi)</option>
+            <option value="te-IN">🇮🇳 తెలుగు (Telugu)</option>
+            <option value="kn-IN">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+            <option value="en-IN">🇮🇳 English (Indian)</option>
+          </select>
+        </div>
+
+        <!-- Latency & Health Indicator -->
+        <div class="health-pill" id="healthPill">
+          <span class="pulse-dot"></span>
+          <span id="latencyDisplay">Prisma v2.5 • ~150ms</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="workspace-grid">
+      <!-- Left Column: The Voice Console & Acoustic Stress-Test -->
+      <section class="console-card glass-panel" aria-label="Voice Console">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="badge-icon">🎙️</span>
+            <div>
+              <h2 class="card-title">Real-Time Voice Console</h2>
+              <p class="card-caption">Speak freely in your mother tongue with ambient noise</p>
+            </div>
+          </div>
+          
+          <!-- Acoustic Noise Mode Selector (The 60s Demo Hook) -->
+          <div class="noise-selector-group">
+            <span class="noise-label">Acoustic Environment:</span>
+            <div class="noise-pills" id="noiseModePills">
+              <button type="button" class="noise-pill active" data-mode="clean" id="noiseBtnClean" title="High Fidelity Studio Audio">
+                <span class="pill-icon">🌿</span> Clean
+              </button>
+              <button type="button" class="noise-pill" data-mode="tractor" id="noiseBtnTractor" title="Simulates loud field tractor engine & wind">
+                <span class="pill-icon">🚜</span> Tractor
+              </button>
+              <button type="button" class="noise-pill" data-mode="mandi" id="noiseBtnMandi" title="Simulates bustling APMC market chatter & horns">
+                <span class="pill-icon">🏪</span> Mandi
+              </button>
+              <button type="button" class="noise-pill" data-mode="telephony" id="noiseBtnTelephony" title="Simulates 8kHz 2G cellular phone call">
+                <span class="pill-icon">📞</span> 8kHz Call
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Live Waveform Visualizer & Mic Button -->
+        <div class="visualizer-wrapper">
+          <canvas id="waveformCanvas" width="600" height="140"></canvas>
+          <div class="visualizer-status" id="visualizerStatus">Tap the microphone to speak / माइक दबाकर बोलें</div>
+        </div>
+
+        <!-- Big Interactive Mic Action Button -->
+        <div class="mic-action-area">
+          <button type="button" class="mic-button" id="micButton" aria-label="Toggle Microphone">
+            <div class="mic-ripple-ring ring-1"></div>
+            <div class="mic-ripple-ring ring-2"></div>
+            <div class="mic-inner-circle">
+              <svg class="mic-svg" id="micSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </div>
+          </button>
+          <div class="recording-timer" id="recordingTimer">00:00</div>
+        </div>
+
+        <!-- Quick Vernacular Demo Prompts -->
+        <div class="quick-prompts-area">
+          <span class="quick-prompts-title">💡 Quick Vernacular Prompts (Click to Test):</span>
+          <div class="prompt-chips">
+            <button type="button" class="prompt-chip" data-prompt="नासिक मंडी में प्याज और गेहूं का क्या भाव है?">
+              🌾 नासिक मंडी में प्याज का भाव?
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="टमाटर के पत्ते पीले पड़ रहे हैं और मुड़ रहे हैं क्या करें?">
+              🍅 टमाटर के पत्ते पीले पड़ रहे हैं
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="पीएम किसान सम्मान निधि की अगली किस्त कब आएगी?">
+              💰 पीएम किसान की अगली किस्त?
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="कपास में गुलाबी सुंडी लगी है, कौन सी दवा डालें?">
+              🌱 कपास में गुलाबी सुंडी का इलाज
+            </button>
+            <button type="button" class="prompt-chip" data-prompt="नाशिक मार्केटमध्ये कांद्याचा दर काय आहे?" data-lang="mr-IN">
+              🇮🇳 (मराठी) कांद्याचा दर काय आहे?
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Conversation, Audio Playback & Smart Advisory Card -->
+      <section class="results-card glass-panel" aria-label="Conversation and Advisory">
+        <!-- Live Transcript Display -->
+        <div class="transcript-box">
+          <div class="section-label-row">
+            <span class="section-label">Farmer's Voice Transcript (किसान की आवाज़)</span>
+            <span class="tech-tag" id="sttTechTag">Gnani Prisma v2.5 STT</span>
+          </div>
+          <div class="transcript-content" id="transcriptDisplay">
+            <span class="placeholder-text">Your spoken words will appear here in real time...</span>
+          </div>
+        </div>
+
+        <!-- KisanSetu Voice Response Box -->
+        <div class="voice-response-box">
+          <div class="section-label-row">
+            <span class="section-label">KisanSetu Voice Response (सलाहकार उत्तर)</span>
+            <span class="tech-tag" id="ttsTechTag">Gnani Timbre v2.5 (Nalini)</span>
+          </div>
+          <div class="voice-response-content" id="voiceResponseDisplay">
+            <span class="placeholder-text">KisanSetu will speak back aloud in natural Indic cadence...</span>
+          </div>
+
+          <!-- In-Page Audio Player Controller -->
+          <div class="audio-player-wrapper" id="audioPlayerWrapper" style="display: none;">
+            <audio id="ttsAudioPlayer" controls></audio>
+            <button type="button" class="replay-btn" id="replayAudioBtn">
+              <span>🔊</span> Replay Voice
+            </button>
+            <span class="latency-stat" id="totalLatencyStat">Latency: -- ms</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Kisan Smart Advisory Card -->
+        <div class="advisory-card-wrapper" id="advisoryCardWrapper">
+          <div class="empty-card-state" id="emptyCardState">
+            <div class="empty-icon">📊</div>
+            <h3>Smart Advisory Card</h3>
+            <p>Speak or select a prompt to generate live APMC Mandi rates, pest triage, or scheme details.</p>
+          </div>
+
+          <div class="active-card-content" id="activeCardContent" style="display: none;">
+            <!-- Dynamically populated via JavaScript -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer with Challenge Context -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>🇮🇳 Built for <strong>The Great Indian AI Internship Challenge</strong> by <strong>Gnani.ai</strong></span>
+      </div>
+      <div class="footer-right">
+        <span>Powered by <strong>Gnani Artha Sovereign AI Stack</strong> • Prisma v2.5 + Timbre v2.5</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
