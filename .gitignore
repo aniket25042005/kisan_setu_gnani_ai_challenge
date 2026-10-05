@@ -32,6 +32,7 @@ backend/cache/
 Thumbs.db
 *.log
 
-# Internal Planning & Submission Drafts (Keep local only)
-submission/
+# Internal Planning & Submission Drafts
+submission/*
+!submission/project_brief.md
 IMPLEMENTATION_PLAN.md
